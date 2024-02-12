@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 class CoffeeBase(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.connection = sqlite3.connect('coffee.sqlite')
+        self.connection = sqlite3.connect('data/coffee.sqlite')
         self.initUI()
 
     def initUI(self):
@@ -44,7 +44,7 @@ class CoffeeBase(QMainWindow):
 class AddEditCoffeeForm(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.connection = sqlite3.connect('coffee.sqlite')
+        self.connection = sqlite3.connect('data/coffee.sqlite')
         self.initUI()
 
     def initUI(self):
