@@ -6,22 +6,35 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>737</width>
-    <height>600</height>
+    <width>761</width>
+    <height>636</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Кофе</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>40</y>
       <width>761</width>
-      <height>591</height>
+      <height>571</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_edit_btn">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>152</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Добавить / изменить запись</string>
     </property>
    </widget>
   </widget>
