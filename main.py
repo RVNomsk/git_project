@@ -1,19 +1,21 @@
 import sqlite3
 import sys
 
-from PyQt5 import uic
+# from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+import main_form
+import addEditCoffeeForm
 
 
-class CoffeeBase(QMainWindow):
+class CoffeeBase(QMainWindow, main_form.Ui_MainWindow):
     def __init__(self):
         super().__init__()
+        self.setupUi(self)
         self.connection = sqlite3.connect('data/coffee.sqlite')
         self.initUI()
 
     def initUI(self):
-        uic.loadUi('main.ui', self)
         # выведем содержимое базы данных в файл без всяких лишних действий
         self.show_data()
 
@@ -22,10 +24,7 @@ class CoffeeBase(QMainWindow):
     def show_data(self):
         query = "SELECT * FROM Coffee"
         cur = self.connection.cursor()
-        # cur.description = ["id", "variety_name", "degree_of_roasting", "ground_or_beans", "description_of_taste", \
-        #                    "price", "packaging_volume_gram"]
         res = cur.execute(query).fetchall()
-
         self.tableWidget.setColumnCount(7)
         self.tableWidget.setRowCount(0)
         for i, row in enumerate(res):
@@ -37,18 +36,21 @@ class CoffeeBase(QMainWindow):
         self.connection.close()
 
     def open_add_edit_form(self):
-        self.add_edit_form = AddEditCoffeeForm()
+        # передадим текущий экземпляр класса во вторую форму
+        self.add_edit_form = AddEditCoffeeForm(self)
         self.add_edit_form.show()
 
 
-class AddEditCoffeeForm(QMainWindow):
-    def __init__(self):
+class AddEditCoffeeForm(QMainWindow, addEditCoffeeForm.Ui_MainWindow):
+    def __init__(self, parent):
         super().__init__()
+        # создадим внутреннюю ссылку на экземпляр главной формы
+        self.parent = parent
+        self.setupUi(self)
         self.connection = sqlite3.connect('data/coffee.sqlite')
         self.initUI()
 
     def initUI(self):
-        uic.loadUi('addEditCoffeeForm.ui', self)
         self.add_btn.clicked.connect(self.add_data)
         self.edit_btn.clicked.connect(self.edit_data)
 
@@ -65,7 +67,6 @@ class AddEditCoffeeForm(QMainWindow):
                 id = int(self.id.text())
                 is_id = self.connection.cursor().execute(f"SELECT id FROM Coffee WHERE id={id}").fetchall()
                 if param == "add":
-                    # print(is_id)
                     if is_id:
                         return False
                 elif param == "edit":
@@ -92,13 +93,14 @@ class AddEditCoffeeForm(QMainWindow):
             # print(query)
             cur.execute(query)
             self.connection.commit()
+            # обновляем всю БД на главной форме
+            self.parent.show_data()
         else:
             QMessageBox().warning(self, "Ошибка заполнения", "Заполните поля корректно!")
 
     def edit_data(self):
         cur = self.connection.cursor()
         line = self.get_data("edit")
-        # print(line)
         if line:
             query = f"""UPDATE Coffee 
                     SET 
@@ -110,9 +112,10 @@ class AddEditCoffeeForm(QMainWindow):
                     price = ?,
                     packaging_volume_gram = ? 
                     WHERE id = {line[0]}"""
-            # print(query)
             cur.execute(query, tuple(line))
             self.connection.commit()
+            # обновляем всю БД на главной форме
+            self.parent.show_data()
         else:
             QMessageBox().warning(self, "Ошибка заполнения", "Заполните поля корректно!\nВозможно нет такой записи")
 
